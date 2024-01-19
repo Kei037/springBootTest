@@ -6,6 +6,7 @@
 </head>
 <body>
     <h1 th:text="${msg}"></h1>
+    <!--  th:with을 이용해 임시변수를 간단처리 가능 ( 변수명 = 값 )  -->
     <div th:with="num1 = ${10}, num2 = ${20}">
         <h4 th:text="${num1 + num2}"></h4>
     </div>

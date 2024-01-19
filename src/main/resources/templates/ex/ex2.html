@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <ul>
+        <!-- th:if / th:unless는 별도의 속성으로 사용할수 있음, if
+         if ~ else 와 다르게 사용-->
+        <li th:each="str, status: ${list2}">
+            <span th:if="${status.odd}">ODD -- [[${str}]]</span>
+            <span th:unless="${status.odd}">EVEN -- [[${str}]]</span>
+        </li>
+    </ul>
+    <ul>
+        <!-- ?를 이용하여 삼항연산자 사용 -->
+        <li th:each="str, status: ${list2}">
+            <span th:text="${status.odd} ? 'ODD ---'+${str} : 'EVEN ---'+${str}"></span>
+        </li>
+    </ul>
+    <ul>
+        <!-- th:swich는 th:case와 같이 사용해서 Switch문 처리 가능 -->
+        <li th:each="str, status: ${list2}">
+            <th:block th:switch="${status.index % 3}">
+                <span th:case="0">0</span>
+                <span th:case="1">1</span>
+                <span th:case="2">2</span>
+            </th:block>
+        </li>
+    </ul>
+    <br>
+    <!-- 링크처리는 @작성 -->
+    <a th:href="@{/hello}">Go to /hello</a>
+    <!-- key=value 형태로 필요한 파라미터를 처리 -->
+    <a th:href="@{/hello(name='AAA', age=16)}">Go to Key=value /hello</a>
+    <br>
+    <a th:href="@{/hello(name='한글처리', age=16)}">Go to 한글인코딩 /hello</a>
+</body>
+</html>

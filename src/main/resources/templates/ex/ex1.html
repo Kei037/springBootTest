@@ -11,5 +11,18 @@
     <!-- 'th:' 속성 사용 -->
     <h4 th:text="${list}"></h4>
 <!--/* <h3 th:each="${sos}">SOS</h3>> */-->
+    <hr>
+    <ul>
+        <li th:each="str: ${list}" th:text="${str}"></li>
+        <!-- each로 처리하면 status변수로 index, count, size 등 자주쓰는 값 사용 가능 -->
+        <li th:each="str, status: ${list}">
+            [[${status.index}]] -- [[${str}]]
+        </li>
+    </ul>
+    <ul>
+        <th:block th:each="str: ${list}">
+            <li>[[${str}]]</li>
+        </th:block>
+    </ul>
 </body>
 </html>
