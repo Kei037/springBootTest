@@ -66,4 +66,9 @@ public class SampleController2 {
 
         model.addAttribute("dto", sampleDTO);
     }
+
+    @GetMapping("/ex/ex4")
+    public void ex4(Model model) {
+        model.addAttribute("arr", new String[] {"AAA", "BBB", "CCC"});
+    }
 }
