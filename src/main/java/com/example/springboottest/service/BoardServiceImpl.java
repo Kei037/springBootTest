@@ -5,15 +5,14 @@ import com.example.springboottest.dto.BoardDTO;
 import com.example.springboottest.dto.PageRequestDTO;
 import com.example.springboottest.dto.PageResponseDTO;
 import com.example.springboottest.repository.BoardRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,15 +67,10 @@ public class BoardServiceImpl implements BoardService {
         Pageable pageable = pageRequestDTO.getPageable("bno");
 
         Page<Board> boardPage = boardRepository.searchAll(types, keyword, pageable);
-/*
-        List<BoardDTO> boardDTOList = new ArrayList<>();
-        for (Board board : boardPage.getContent()) {
-            boardDTOList.add(modelMapper.map(board, BoardDTO.class));
-        }
- */
+
         List<BoardDTO> boardDTOList = boardPage.getContent().stream()
-                .map(board -> (modelMapper.map(board, BoardDTO.class))
-                        .collect(Collectors.toList()));
+                .map(board -> modelMapper.map(board, BoardDTO.class))
+                .collect(Collectors.toList());
 
         return PageResponseDTO.<BoardDTO>withAll()
                 .pageRequestDTO(pageRequestDTO)
