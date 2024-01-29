@@ -1,11 +1,12 @@
 package com.example.springboottest.repository;
 
 import com.example.springboottest.domain.Board;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.*;
+import com.example.springboottest.repository.search.BoardSearch;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-public interface BoardRepository extends JpaRepository<Board, Long> {
+public interface BoardRepository extends JpaRepository<Board, Long>, BoardSearch {
 
-    Page<Board> searchAll(String[] types, String keyword, Pageable pageable);
+    @Query(value = "select now()", nativeQuery = true)
+    String getTime();
 }

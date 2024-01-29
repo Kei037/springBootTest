@@ -2,20 +2,14 @@ package com.example.springboottest.service;
 
 import com.example.springboottest.domain.Board;
 import com.example.springboottest.dto.BoardDTO;
-import com.example.springboottest.dto.PageRequestDTO;
-import com.example.springboottest.dto.PageResponseDTO;
 import com.example.springboottest.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -59,7 +53,7 @@ public class BoardServiceImpl implements BoardService {
     public void remove(Long bno) {
         boardRepository.deleteById(bno);
     }
-
+/*
     @Override
     public PageResponseDTO<BoardDTO> list(PageRequestDTO pageRequestDTO) {
         String[] types = pageRequestDTO.getTypes();
@@ -78,4 +72,6 @@ public class BoardServiceImpl implements BoardService {
                 .total((int)boardPage.getTotalElements())
                 .build();
     }
+
+ */
 }

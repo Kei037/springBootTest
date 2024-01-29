@@ -1,8 +1,6 @@
 package com.example.springboottest.service;
 
 import com.example.springboottest.dto.BoardDTO;
-import com.example.springboottest.dto.PageRequestDTO;
-import com.example.springboottest.dto.PageResponseDTO;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,7 @@ public class BoardServiceTests {
                 .build();
         boardService.modify(boardDTO);
     }
-
+/*
     @Test
     public void testList() {
         PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
@@ -46,4 +44,6 @@ public class BoardServiceTests {
         PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
         log.info(responseDTO);
     }
+
+ */
 }
