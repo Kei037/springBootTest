@@ -42,6 +42,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/nz.net.ultraq.thymeleaf/thymeleaf-layout-dialect
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
+	// validation 관련 라이브러리 추가
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
 	// lombok을 테스트 환경에서도 사용
 	testCompileOnly('org.projectlombok:lombok')
 	testAnnotationProcessor('org.projectlombok:lombok')

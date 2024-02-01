@@ -27,7 +27,7 @@ public class PageRequestDTO {
     private String keyword;
 
     public String[] getTypes() {
-        if (this.type == null || getType().isEmpty()) {
+        if (this.type == null || type.isEmpty()) {
             return null;
         }
         return this.type.split("");

@@ -28,14 +28,12 @@ public class PageResponseDTO<E> {
         }
         this.page = pageRequestDTO.getPage();
         this.size = pageRequestDTO.getSize();
-
         this.total = total;
         this.dtoList = dtoList;
 
         this.end = (int)(Math.ceil(this.page / 10.0) * 10); // 화면에서의 마지막 번호
-        this.start = this.end = 9;                          // 화면에서의 시작 번호
-
-        int last = (int)(Math.ceil(this.total/(double)this.size));
+        this.start = this.end - 9;                          // 화면에서의 시작 번호
+        int last = (int) (Math.ceil(this.total/(double)this.size));
         this.end = Math.min(end, last);
         this.prev = this.start > 1;
         this.next = total > this.end * this.size;
