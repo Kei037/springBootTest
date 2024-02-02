@@ -35,14 +35,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardDTO readOne(Long bno) {
-        modelMapper.typeMap(Board.class, BoardDTO.class).addMappings(mapper -> {
-            mapper.map(Board::getModData, BoardDTO::setModDate);
-        });
+//        modelMapper.typeMap(Board.class, BoardDTO.class).addMappings(mapper -> {
+//            mapper.map(Board::getModData, BoardDTO::setModDate);
+//        });
         Optional<Board> result = boardRepository.findById(bno);
         Board board = result.orElseThrow();
-        BoardDTO boardDTO = modelMapper.map(board, BoardDTO.class);
-        return boardDTO;
-        // return modelMapper.map(board, BoardDTO.class);
+        return modelMapper.map(board, BoardDTO.class);
     }
     /*
     @Override
