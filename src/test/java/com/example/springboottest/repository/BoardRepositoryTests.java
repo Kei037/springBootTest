@@ -33,6 +33,17 @@ public class BoardRepositoryTests {
     }
 
     @Test
+    public void testInsertOne() {
+        Board board = Board.builder()
+                .title("title...")
+                .content("content...")
+                .writer("user00")
+                .build();
+        Board result = boardRepository.save(board);
+        log.info("BNO: " + result.getBno());
+    }
+
+    @Test
     public void testSelect() {
         Long bno = 100L;
         Optional<Board> result = boardRepository.findById(bno);

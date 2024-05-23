@@ -1,5 +1,6 @@
 package com.example.springboottest.controller;
 
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,5 +13,10 @@ public class SampleController {
     public void hello(Model model) {
         log.info("hello...");
         model.addAttribute("msg", "Hello World");
+    }
+
+    @GetMapping("/layout/basic")
+    public void test(){
+
     }
 }
