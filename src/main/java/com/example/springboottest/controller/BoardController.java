@@ -4,6 +4,7 @@ import com.example.springboottest.dto.BoardDTO;
 import com.example.springboottest.dto.PageRequestDTO;
 import com.example.springboottest.dto.PageResponseDTO;
 import com.example.springboottest.service.BoardService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class BoardController {
     private final BoardService boardService;
 
+    @Operation(summary = "list")
     @GetMapping("/list")
     public void list(PageRequestDTO pageRequestDTO, Model model) {
         PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
@@ -53,6 +55,7 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
+    @Operation(summary = "read")
     @GetMapping({"/read", "/modify"})
     public void read(Long bno, PageRequestDTO pageRequestDTO, Model model) {
         BoardDTO boardDTO = boardService.readOne(bno);
