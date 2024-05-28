@@ -2,6 +2,8 @@ package com.example.springboottest.repository.search;
 
 import com.example.springboottest.domain.Board;
 import com.example.springboottest.domain.QBoard;
+import com.example.springboottest.domain.QReply;
+import com.example.springboottest.dto.BoardListReplyCountDTO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import lombok.extern.log4j.Log4j2;
@@ -75,4 +77,17 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
         return new PageImpl<>(list, pageable, count);
     }
 
+    // Querydsl을 이용한 검색 처리
+    @Override
+    public Page<BoardListReplyCountDTO> searchWithReplyCount(String[] types, String keyword, Pageable pageable) {
+        QBoard board = QBoard.board;
+        QReply reply = QReply.reply;
+
+        JPQLQuery<Board> query = from(board); // select b from Board b
+        query.leftJoin(reply).on(reply.board.eq(board)); // left join reply on reply.board = board
+
+        query.groupBy(board); // board 기준으로 그룹화
+
+        return null;
+    }
 }
