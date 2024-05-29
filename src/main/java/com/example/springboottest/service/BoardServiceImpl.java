@@ -2,6 +2,7 @@ package com.example.springboottest.service;
 
 import com.example.springboottest.domain.Board;
 import com.example.springboottest.dto.BoardDTO;
+import com.example.springboottest.dto.BoardListReplyCountDTO;
 import com.example.springboottest.dto.PageRequestDTO;
 import com.example.springboottest.dto.PageResponseDTO;
 import com.example.springboottest.repository.BoardRepository;
@@ -87,4 +88,19 @@ public class BoardServiceImpl implements BoardService {
                 .build();
     }
 
+    @Override
+    public PageResponseDTO<BoardListReplyCountDTO> listWithReplyCount(PageRequestDTO pageRequestDTO) {
+        String[] types = pageRequestDTO.getTypes();
+        String keyword = pageRequestDTO.getKeyword();
+        Pageable pageable = pageRequestDTO.getPageable("bno");
+
+        Page<BoardListReplyCountDTO> result = boardRepository.searchWithReplyCount(types, keyword, pageable);
+
+        return PageResponseDTO.<BoardListReplyCountDTO>withAll()
+                .pageRequestDTO(pageRequestDTO)
+                .dtoList(result.getContent())
+                .total((int) result.getTotalElements())
+                .build();
+    }
+    
 }

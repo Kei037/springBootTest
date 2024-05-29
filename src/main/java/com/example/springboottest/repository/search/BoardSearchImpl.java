@@ -5,6 +5,7 @@ import com.example.springboottest.domain.QBoard;
 import com.example.springboottest.domain.QReply;
 import com.example.springboottest.dto.BoardListReplyCountDTO;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -83,11 +84,38 @@ public class BoardSearchImpl extends QuerydslRepositorySupport implements BoardS
         QBoard board = QBoard.board;
         QReply reply = QReply.reply;
 
-        JPQLQuery<Board> query = from(board); // select b from Board b
+        JPQLQuery<Board> query = from(board);
         query.leftJoin(reply).on(reply.board.eq(board)); // left join reply on reply.board = board
-
         query.groupBy(board); // board 기준으로 그룹화
 
-        return null;
+        if ((types != null && types.length > 0) && keyword != null) { // 검색 조건과 키워드가 있다면
+            BooleanBuilder booleanBuilder = new BooleanBuilder(); // (
+            for (String type : types) {
+                switch (type) {
+                    case "t":
+                        booleanBuilder.or(board.title.contains(keyword));
+                        break;
+                    case "c":
+                        booleanBuilder.or(board.content.contains(keyword));
+                        break;
+                    case "w":
+                        booleanBuilder.or(board.writer.contains(keyword));
+                        break;
+                }
+            } // end for
+            query.where(booleanBuilder);
+        } // end if
+
+        query.where(board.bno.gt(0L));
+
+        // select b.bno, b.title, b.writer, b.regDate, count(r) from Board b left join Reply r on r.board = b group by b
+        JPQLQuery<BoardListReplyCountDTO> dtojpqlQuery = query.select(Projections.bean(BoardListReplyCountDTO.class,
+                board.bno, board.title, board.writer, board.regDate, reply.count().as("replyCount")));
+
+        this.getQuerydsl().applyPagination(pageable, dtojpqlQuery);
+        List<BoardListReplyCountDTO> dtoList = dtojpqlQuery.fetch();
+        long count = dtojpqlQuery.fetchCount();
+
+        return new PageImpl<>(dtoList, pageable, count);
     }
 }

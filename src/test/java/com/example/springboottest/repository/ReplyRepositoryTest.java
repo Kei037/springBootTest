@@ -2,6 +2,7 @@ package com.example.springboottest.repository;
 
 import com.example.springboottest.domain.Board;
 import com.example.springboottest.domain.Reply;
+import com.example.springboottest.dto.BoardListReplyCountDTO;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
@@ -54,5 +55,25 @@ class ReplyRepositoryTest {
             log.info("reply == " + reply.getRno());
             log.info("board == " + reply.getBoard().toString()); // Board 정보 출력
         });
+    }
+
+    @Test
+    public void searchReplyCountTest() {
+        String[] types = {"t", "c", "w"};
+        String keyword = "1";
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("bno").descending());
+        Page<BoardListReplyCountDTO> result = boardRepository.searchWithReplyCount(types, keyword, pageable);
+
+        // total pages
+        log.info(result.getTotalPages());
+        // page size
+        log.info(result.getSize());
+        // pageNumber
+        log.info(result.getNumber());
+        // prev next
+
+        log.info(result.hasPrevious() + ": " + result.hasNext());
+        result.getContent().forEach(board -> log.info(board));
     }
 }

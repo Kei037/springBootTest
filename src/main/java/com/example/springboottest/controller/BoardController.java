@@ -1,6 +1,7 @@
 package com.example.springboottest.controller;
 
 import com.example.springboottest.dto.BoardDTO;
+import com.example.springboottest.dto.BoardListReplyCountDTO;
 import com.example.springboottest.dto.PageRequestDTO;
 import com.example.springboottest.dto.PageResponseDTO;
 import com.example.springboottest.service.BoardService;
@@ -26,7 +27,8 @@ public class BoardController {
     @Operation(summary = "list")
     @GetMapping("/list")
     public void list(PageRequestDTO pageRequestDTO, Model model) {
-        PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
+//        PageResponseDTO<BoardDTO> responseDTO = boardService.list(pageRequestDTO);
+        PageResponseDTO<BoardListReplyCountDTO> responseDTO = boardService.listWithReplyCount(pageRequestDTO);
 
         log.info(responseDTO);
 
