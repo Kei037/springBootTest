@@ -55,7 +55,84 @@
                 </div>
             </div>
         </div>
+    </div> <!-- end row -->
+
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <div class="my-4">
+                <!-- 댓글 추가 버튼 -->
+                <button class="btn btn-info addReplyBtn">ADD REPLY</button>
+            </div>
+            <!-- 댓글 목록 -->
+            <ul class="list-group replyList">
+
+            </ul>
+        </div>
+        <!-- 댓글 목록 페이징 -->
+        <div class="row mt-4">
+            <div class="col">
+                <ul class="pagination replyPaging">
+
+                </ul>
+            </div>
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/reply.js"></script>
+
+    <script layout:fragment="script" th:inline="javascript">
+        const bno = [[${dto.bno}]];
+
+        function printReplies(page, size, goLast) {
+            getList({bno, page, size, goLast}).then(
+                data => {console.log(data)
+                printList(data.dtoList);
+                printPages(data);
+                }
+            ).catch(e => {
+                console.error(e);
+            });
+        }
+        printReplies(1, 10); // 페이지 로딩 시 댓글 목록 출력
+
+        const replyList = document.querySelector('.replyList'); // 댓글 목록 DOM
+        const replyPaging = document.querySelector('.replyPaging'); // 페이지 목록 DOM
+
+        function printList(dtoList) { // 댓글 목록 출력
+            let str = '';
+            if (dtoList && dtoList.length > 0) {
+                for (const dto of dtoList) {
+                    str += `<li class="list-group-item d-flex replyItem">
+                                <span class="col-2">${dto.rno}</span>
+                                <span class="col-6" data-rno="${dto.rno}">${dto.replyText}</span>
+                                <span class="col-2">${dto.replyWriter}</span>
+                                <span class="col-2">${dto.regDate}</span>
+                            </li>`;
+                }
+            }
+            replyList.innerHTML = str;
+        }
+
+        function printPages(data) { // 페이지 목록 출력
+            // pagination
+            page = data.page;
+            let pageStr = '';
+            if(data.prev) {
+                pageStr += `<li class="page-item"><a class="page-link" data-page="${data.start - 1}">PREV</a></li>`;
+            }
+            for(let i = data.start; i <= data.end; i++) {
+                pageStr += `<li class="page-item ${i === data.page ? "active" : ""}">
+                            <a class="page-link" data-page="${i}">${i}</a></li>`;
+            }
+            if(data.next) {
+                pageStr += `<li class="page-item"><a class="page-link" data-page="${data.end + 1}">NEXT</a></li>`;
+            }
+            // console.log(pageStr);
+            replyPaging.innerHTML = pageStr;
+        }
+
+    </script>
 </div>
 
 </html>
