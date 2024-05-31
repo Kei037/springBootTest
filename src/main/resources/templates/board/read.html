@@ -35,11 +35,13 @@
 
                     <div class="input-group mb-3">
                         <span class="input-group-text">RegDate</span>
-                        <input type="text" class="form-control" th:value="${#temporals.format(dto.regDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
+                        <input type="text" class="form-control"
+                               th:value="${#temporals.format(dto.regDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
                     </div>
                     <div class="input-group mb-3">
                         <span class="input-group-text">ModDate</span>
-                        <input type="text" class="form-control" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
+                        <input type="text" class="form-control"
+                               th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
                     </div>
 
                     <div class="my-4">
@@ -78,59 +80,165 @@
         </div>
     </div>
 
+    <!-- 댓글 추가 모달 -->
+    <div class="modal registerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Register Reply</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Reply Text</span>
+                        <input type="text" class="form-control replyText">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Reply Writer</span>
+                        <input type="text" class="form-control replyWriter">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary registerBtn">Register</button>
+                    <button type="button" class="btn btn-outline-dark closeRegisterBtn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- // regist modal -->
+
+    <!-- modify modal -->
+    <div class="modal modifyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title replyHeader"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Reply Text</span>
+                        <input type="text" class="form-control modifyText" >
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info modifyBtn">Modify</button>
+                    <button type="button" class="btn btn-danger removeBtn">Remove</button>
+                    <button type="button" class="btn btn-outline-dark closeModifyBtn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- // modify modal -->
+
+
+
+<!--/* ==========================================  자바스크립트 영역  ========================================== */-->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/js/reply.js"></script>
 
     <script layout:fragment="script" th:inline="javascript">
-        const bno = [[${dto.bno}]];
+        document.addEventListener('DOMContentLoaded', function () {
+            // 모달 관련 객체
+            const registerModal = new bootstrap.Modal(document.querySelector('.registerModal'));
 
-        function printReplies(page, size, goLast) {
-            getList({bno, page, size, goLast}).then(
-                data => {console.log(data)
-                printList(data.dtoList);
-                printPages(data);
-                }
-            ).catch(e => {
-                console.error(e);
+            const registerBtn = document.querySelector('.registerBtn');
+            const replyText = document.querySelector('.replyText');
+            const replyWriter = document.querySelector('.replyWriter');
+            const closeRegisterBtn = document.querySelector('.closeRegisterBtn');
+
+            // 댓글 추가 버튼 클릭 시
+            document.querySelector('.addReplyBtn').addEventListener('click', () => {
+                registerModal.show();
             });
-        }
-        printReplies(1, 10); // 페이지 로딩 시 댓글 목록 출력
 
-        const replyList = document.querySelector('.replyList'); // 댓글 목록 DOM
-        const replyPaging = document.querySelector('.replyPaging'); // 페이지 목록 DOM
+            // 댓글 등록
+            registerBtn.addEventListener('click', () => {
+                const replyObj = {bno: bno, replyText: replyText.value, replyWriter: replyWriter.value};
+                addReply(replyObj).then(result => { // 등록이 된 후 결과 처리
+                    alert(result.data.rno);
+                    registerModal.hide();
+                    replyText.value = '';
+                    replyWriter.value = '';
+                    printReplies(1, 10, true); // 댓글 목록 갱신
+                }).catch(e => {
+                    alert('Exception');
+                });
+            });
 
-        function printList(dtoList) { // 댓글 목록 출력
-            let str = '';
-            if (dtoList && dtoList.length > 0) {
-                for (const dto of dtoList) {
-                    str += `<li class="list-group-item d-flex replyItem">
+            // 댓글 목록 출력
+            const bno = [[${dto.bno}]];
+            function printReplies(page, size, goLast) {
+                getList({bno, page, size, goLast}).then(
+                    data => {
+                        console.log(data)
+                        printList(data.dtoList);
+                        printPages(data);
+                    }
+                ).catch(e => {
+                    console.error(e);
+                });
+            }
+
+            // 페이지 로딩 시 댓글 목록 출력
+            // printReplies(1, 10);
+            printReplies(1, 10, true);
+
+            const replyList = document.querySelector('.replyList'); // 댓글 목록 DOM
+            const replyPaging = document.querySelector('.replyPaging'); // 페이지 목록 DOM
+
+            function printList(dtoList) { // 댓글 목록 출력
+                let str = '';
+                if (dtoList && dtoList.length > 0) {
+                    for (const dto of dtoList) {
+                        str += `<li class="list-group-item d-flex replyItem">
                                 <span class="col-2">${dto.rno}</span>
                                 <span class="col-6" data-rno="${dto.rno}">${dto.replyText}</span>
                                 <span class="col-2">${dto.replyWriter}</span>
                                 <span class="col-2">${dto.regDate}</span>
                             </li>`;
+                    }
                 }
+                replyList.innerHTML = str;
             }
-            replyList.innerHTML = str;
-        }
 
-        function printPages(data) { // 페이지 목록 출력
-            // pagination
-            page = data.page;
-            let pageStr = '';
-            if(data.prev) {
-                pageStr += `<li class="page-item"><a class="page-link" data-page="${data.start - 1}">PREV</a></li>`;
-            }
-            for(let i = data.start; i <= data.end; i++) {
-                pageStr += `<li class="page-item ${i === data.page ? "active" : ""}">
+            // 댓글 페이지 목록 출력
+            function printPages(data) {
+                // pagination
+                page = data.page;
+                let pageStr = '';
+                if (data.prev) {
+                    pageStr += `<li class="page-item"><a class="page-link" data-page="${data.start - 1}">PREV</a></li>`;
+                }
+                for (let i = data.start; i <= data.end; i++) {
+                    pageStr += `<li class="page-item ${i === data.page ? "active" : ""}">
                             <a class="page-link" data-page="${i}">${i}</a></li>`;
+                }
+                if (data.next) {
+                    pageStr += `<li class="page-item"><a class="page-link" data-page="${data.end + 1}">NEXT</a></li>`;
+                }
+                // console.log(pageStr);
+                replyPaging.innerHTML = pageStr;
             }
-            if(data.next) {
-                pageStr += `<li class="page-item"><a class="page-link" data-page="${data.end + 1}">NEXT</a></li>`;
-            }
-            // console.log(pageStr);
-            replyPaging.innerHTML = pageStr;
-        }
+
+            // 3. 페이징 클릭
+            let page = 1;
+            let size = 10;
+
+            replyPaging.addEventListener('click', (e) => {
+                e.preventDefault()
+                e.stopPropagation()
+
+                const target = e.target;
+                if (!target || target.tagName !== 'A') {
+                    return;
+                }
+                page = target.getAttribute('data-page');
+                printReplies(page, size);
+
+            });
+
+        });
 
     </script>
 </div>

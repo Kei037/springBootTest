@@ -21,7 +21,39 @@ async function get1(bno) {
     return result.data;
 }
 
-async function getList({bno, page, size, qoLast}) {
+// 댓글 목록 가져오기
+async function getList({bno, page, size, goLast}) {
+    // axios.get(url, {params: {page, size}}) : url에 page와 size를 파라미터로 넘겨준다.
     const result = await axios.get(`/api/replies/list/${bno}?page=${page}`, {params: {page, size}});
+
+    // goLast가 true일 경우 마지막 페이지로 이동
+    if (goLast) {
+        // result.data.total : 전체 댓글 수
+        const total = result.data.total
+        // Math.ceil(total / size) : 전체 페이지 수
+        const lastPage = parseInt(Math.ceil(total / size))
+
+        // getList({bno:bno, page:lastPage, size:size}) : 마지막 페이지로 이동
+        return getList({bno:bno, page:lastPage, size:size})
+    }
+
     return result.data;
+}
+
+// 댓글 추가하기
+async function addReply(replyObj) {
+    const response = await axios.post(`/api/replies/`, replyObj);
+    return response;
+}
+
+// 댓글 조회
+async function getReply(rno) {
+    const response = await axios.get(`/api/replies/${rno}`);
+    return response.data;
+}
+
+// 댓글 수정
+async function modifyReply(replyObj) {
+    const response = await axios.put(`/api/replies/${replyObj.rno}`, replyObj);
+    return response.data;
 }

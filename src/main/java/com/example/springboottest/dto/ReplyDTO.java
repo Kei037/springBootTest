@@ -1,5 +1,7 @@
 package com.example.springboottest.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -25,5 +27,9 @@ public class ReplyDTO {
     @NotEmpty
     private String replyWriter;             // 리플 작성자
 
-    private LocalDateTime regDate, modDate; // 리플 작성일, 수정일
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime regDate;
+
+    @JsonIgnore
+    private LocalDateTime modDate;
 }
