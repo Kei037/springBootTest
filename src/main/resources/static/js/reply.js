@@ -57,3 +57,14 @@ async function modifyReply(replyObj) {
     const response = await axios.put(`/api/replies/${replyObj.rno}`, replyObj);
     return response.data;
 }
+
+async function removeReply(rno) {
+    const response = await axios.delete(`/api/replies/${rno}`);
+    return response.data;
+}
+
+// 댓글 작성자 수정
+async function modifyReplyWriter(replyObj) {
+    const response = await axios.put(`/api/replies/writer/${replyObj.rno}`, replyObj);
+    return response.data;
+}

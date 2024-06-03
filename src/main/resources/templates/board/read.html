@@ -132,6 +132,30 @@
     <!-- // modify modal -->
 
 
+    <!-- modify writer modal -->
+    <div class="modal modifyModalWriter" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title replyHeader"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Reply Writer</span>
+                        <input type="text" class="form-control modifyWriter" >
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info modifyBtnWriter">Modify</button>
+                    <button type="button" class="btn btn-danger removeBtnWriter">Remove</button>
+                    <button type="button" class="btn btn-outline-dark closeModifyBtnWriter">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- // modify writer modal -->
+
 
 <!--/* ==========================================  자바스크립트 영역  ========================================== */-->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -139,34 +163,9 @@
 
     <script layout:fragment="script" th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function () {
-            // 모달 관련 객체
-            const registerModal = new bootstrap.Modal(document.querySelector('.registerModal'));
-
-            const registerBtn = document.querySelector('.registerBtn');
-            const replyText = document.querySelector('.replyText');
-            const replyWriter = document.querySelector('.replyWriter');
-            const closeRegisterBtn = document.querySelector('.closeRegisterBtn');
-
-            // 댓글 추가 버튼 클릭 시
-            document.querySelector('.addReplyBtn').addEventListener('click', () => {
-                registerModal.show();
-            });
-
-            // 댓글 등록
-            registerBtn.addEventListener('click', () => {
-                const replyObj = {bno: bno, replyText: replyText.value, replyWriter: replyWriter.value};
-                addReply(replyObj).then(result => { // 등록이 된 후 결과 처리
-                    alert(result.data.rno);
-                    registerModal.hide();
-                    replyText.value = '';
-                    replyWriter.value = '';
-                    printReplies(1, 10, true); // 댓글 목록 갱신
-                }).catch(e => {
-                    alert('Exception');
-                });
-            });
-
-            // 댓글 목록 출력
+            /**
+             * 댓글 목록 출력
+             * */
             const bno = [[${dto.bno}]];
             function printReplies(page, size, goLast) {
                 getList({bno, page, size, goLast}).then(
@@ -179,9 +178,7 @@
                     console.error(e);
                 });
             }
-
             // 페이지 로딩 시 댓글 목록 출력
-            // printReplies(1, 10);
             printReplies(1, 10, true);
 
             const replyList = document.querySelector('.replyList'); // 댓글 목록 DOM
@@ -194,7 +191,7 @@
                         str += `<li class="list-group-item d-flex replyItem">
                                 <span class="col-2">${dto.rno}</span>
                                 <span class="col-6" data-rno="${dto.rno}">${dto.replyText}</span>
-                                <span class="col-2">${dto.replyWriter}</span>
+                                <span class="col-2" data-rno-writer="${dto.rno}">${dto.replyWriter}</span>
                                 <span class="col-2">${dto.regDate}</span>
                             </li>`;
                     }
@@ -202,6 +199,9 @@
                 replyList.innerHTML = str;
             }
 
+            /**
+             * 댓글 페이징 관련
+             */
             // 댓글 페이지 목록 출력
             function printPages(data) {
                 // pagination
@@ -238,8 +238,135 @@
 
             });
 
-        });
+            /**
+             * 모달 관련 처리
+             */
+            // 모달 관련 객체
+            const registerModal = new bootstrap.Modal(document.querySelector('.registerModal'));
+            const registerBtn = document.querySelector('.registerBtn');
+            const replyText = document.querySelector('.replyText');
+            const replyWriter = document.querySelector('.replyWriter');
+            const closeRegisterBtn = document.querySelector('.closeRegisterBtn');
 
+            // 댓글 추가 버튼 클릭 시
+            document.querySelector('.addReplyBtn').addEventListener('click', () => {
+                registerModal.show();
+            });
+
+            /**
+             * 모달 댓글 등록
+             */
+            // 댓글 등록
+            registerBtn.addEventListener('click', () => {
+                const replyObj = {bno: bno, replyText: replyText.value, replyWriter: replyWriter.value};
+                addReply(replyObj).then(result => { // 등록이 된 후 결과 처리
+                    alert(result.data.rno);
+                    registerModal.hide();
+                    replyText.value = '';
+                    replyWriter.value = '';
+                    printReplies(1, 10, true); // 댓글 목록 갱신
+                }).catch(e => {
+                    alert(e);
+                });
+            });
+
+            /**
+             * 모달 댓글 수정
+             */
+            const modifyModal = new bootstrap.Modal(document.querySelector('.modifyModal'));
+            const replyHeader = document.querySelector('.replyHeader');
+            const modifyWriter = document.querySelector('.modifyWriter');
+            const modifyText = document.querySelector('.modifyText');
+            const modifyBtn = document.querySelector('.modifyBtn');
+            const removeBtn = document.querySelector('.removeBtn');
+            const closeModifyBtn = document.querySelector('.closeModifyBtn');
+
+            const modifyModalWriter = new bootstrap.Modal(document.querySelector('.modifyModalWriter'));
+            const modifyBtnWriter = document.querySelector('.modifyBtnWriter');
+            const removeBtnWriter = document.querySelector('.removeBtnWriter');
+            const closeModifyBtnWriter = document.querySelector('.closeModifyBtnWriter');
+
+            replyList.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const target = e.target;
+                if (!target || target.tagName !== 'SPAN') {
+                    return;
+                }
+
+                const rno = target.getAttribute('data-rno');
+                const writer = target.getAttribute('data-rno-writer');
+
+                if (!rno) {
+                    if (!writer) {
+                        return;
+                    } else {
+                        getReply(writer).then(reply => {
+                            console.log(reply)
+                            replyHeader.innerHTML = reply.rno;
+                            modifyWriter.value = reply.replyWriter;
+                            modifyModalWriter.show();
+                        }).catch(e => alert(e));
+                    }
+                    return;
+                } else {
+                    getReply(rno).then(reply => {
+                        console.log(reply)
+                        replyHeader.innerHTML = reply.rno;
+                        modifyText.value = reply.replyText;
+                        modifyModal.show();
+                    }).catch(e => alert(e));
+                }
+
+
+            });
+
+            modifyBtn.addEventListener('click', (e) => {
+                console.log('modifyBtn click!!');
+                const replyObj = { bno:bno, rno:replyHeader.innerHTML, replyText:modifyText.value };
+                modifyReply(replyObj).then(result => {
+                    alert(result.rno + '댓글이 수정되었습니다.');
+                    modifyText.value = '';
+                    modifyModal.hide();
+                    printReplies(page, size);
+                }).catch(e => alert(e));
+            })
+
+            modifyBtnWriter.addEventListener('click', (e) => {
+                console.log('modifyBtnWriter click!!');
+                const replyObj = { bno:bno, rno:replyHeader.innerHTML, replyWriter:modifyWriter.value };
+                modifyReply(replyObj).then(result => {
+                    alert(result.rno + '작성자가 수정되었습니다.');
+                    modifyWriter.value = '';
+                    modifyModal.hide();
+                    printReplies(page, size);
+                }).catch(e => alert(e));
+            })
+
+            closeModifyBtn.addEventListener('click', (e) => {
+                modifyModal.hide();
+            })
+
+            closeModifyBtnWriter.addEventListener('click', (e) => {
+                modifyModalWriter.hide()
+            })
+
+
+            /**
+             * 모달 댓글 삭제
+             */
+            removeBtn.addEventListener('click', (e) => {
+                removeReply(replyHeader.innerHTML).then(result => {
+                    alert(result.rno + '댓글이 삭제되었습니다.');
+                    modifyText.value = '';
+                    modifyModal.hide();
+                    page = 1; // 해당 댓글이 삭제되었으니 1페이지로 이동
+                    printReplies(page, size);
+                }).catch(e => console.log(e));
+            })
+
+        });
     </script>
 </div>
 

@@ -5,7 +5,6 @@ import com.example.springboottest.dto.PageResponseDTO;
 import com.example.springboottest.dto.ReplyDTO;
 import com.example.springboottest.service.ReplyService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -69,6 +68,16 @@ public class ReplyController {
     public Map<String, Long> modify(@PathVariable("rno") Long rno, @RequestBody ReplyDTO replyDTO) {
         replyDTO.setRno(rno); // rno 값을 일치시킴
         replyService.modify(replyDTO);
+        Map<String, Long> resultMap = new HashMap<>();
+        resultMap.put("rno", rno);
+        return resultMap;
+    }
+
+    @Operation(summary = "Modify Writer", description = "PUT 방식으로 댓글 작성자 수정")
+    @PutMapping(value = "/writer/{rno}", consumes = MediaType.APPLICATION_JSON_VALUE) // consumes로 JSON 형식만 받음
+    public Map<String, Long> modifyWriter(@PathVariable("rno") Long rno, @RequestBody ReplyDTO replyDTO) {
+        replyDTO.setRno(rno); // rno 값을 일치시킴
+        replyService.modifyWriter(replyDTO);
         Map<String, Long> resultMap = new HashMap<>();
         resultMap.put("rno", rno);
         return resultMap;

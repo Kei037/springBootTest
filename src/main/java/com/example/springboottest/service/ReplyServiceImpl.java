@@ -49,6 +49,14 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     @Override
+    public void modifyWriter(ReplyDTO replyDTO) {
+        Optional<Reply> resultOptional = replyRepository.findById(replyDTO.getRno());
+        Reply reply = resultOptional.orElseThrow();
+        reply.changeWriter(replyDTO.getReplyWriter());
+        replyRepository.save(reply);
+    }
+
+    @Override
     public void remove(Long rno) {
         replyRepository.deleteById(rno);
     }

@@ -11,4 +11,6 @@ public interface ReplyService {
     void remove(Long rno);
 
     PageResponseDTO<ReplyDTO> getListOfBoard(Long bno, PageRequestDTO pageRequestDTO);
+
+    void modifyWriter(ReplyDTO replyDTO);
 }
